@@ -31,12 +31,18 @@ public class CartService {
                 .orElseGet(() -> createNewCartItem(cart, product, quantity));
     }
 
-    private CartItem createNewCartItem(Cart cart, Product product, int quantity) {
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .product(product)
-                .quantity(quantity).build();
-        return cartItemRepository.save(cartItem);
+    private static void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+    }
+
+    private Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+    }
+
+    private Product getProductById(Long productId) {
+        return productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
     }
 
     private CartItem updateQuantity(CartItem item, int quantity) {
@@ -44,17 +50,11 @@ public class CartService {
         return cartItemRepository.save(item);
     }
 
-    private Product getProductById(Long productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
-    }
-
-    private Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
-    }
-
-    private static void validateQuantity(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be positive");
-        }
+    private CartItem createNewCartItem(Cart cart, Product product, int quantity) {
+        CartItem cartItem = CartItem.builder()
+                .cart(cart)
+                .product(product)
+                .quantity(quantity).build();
+        return cartItemRepository.save(cartItem);
     }
 }

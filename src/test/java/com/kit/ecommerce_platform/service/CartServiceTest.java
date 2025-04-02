@@ -61,12 +61,15 @@ class CartServiceTest {
 
     @Test
     void whenAddNewProductToCart_shouldCreateCartItem() {
+        // given
         when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        // when
         CartItem cartItem = cartService.addProductToCart(user.getId(), product.getId(), 1);
 
+        // then
         assertThat(cartItem).isNotNull();
         assertThat(1).isEqualTo(cartItem.getQuantity());
         assertThat(product).isEqualTo(cartItem.getProduct());
@@ -84,6 +87,7 @@ class CartServiceTest {
 
     @Test
     void whenAddExistingProductToCart_shouldUpdateQuantity() {
+        // given
         CartItem existingItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
@@ -96,8 +100,10 @@ class CartServiceTest {
                 .thenReturn(Optional.of(existingItem));
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        // when
         CartItem updatedItem = cartService.addProductToCart(user.getId(), product.getId(), 2);
 
+        // then
         assertThat(3).isEqualTo(updatedItem.getQuantity());
         verify(cartItemRepository).save(existingItem);
     }
