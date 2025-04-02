@@ -6,6 +6,7 @@ import com.kit.ecommerce_platform.model.Product;
 import com.kit.ecommerce_platform.model.repository.CartItemRepository;
 import com.kit.ecommerce_platform.model.repository.CartRepository;
 import com.kit.ecommerce_platform.model.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +21,40 @@ public class CartService {
 
     @Transactional
     public CartItem addProductToCart(Long userId, Long productId, int quantity) {
-        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Cart not found"));
+        validateQuantity(quantity);
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        Cart cart = getCartByUserId(userId);
+        Product product = getProductById(productId);
 
+        return cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
+                .map(item -> updateQuantity(item, quantity))
+                .orElseGet(() -> createNewCartItem(cart, product, quantity));
+    }
+
+    private CartItem createNewCartItem(Cart cart, Product product, int quantity) {
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
                 .quantity(quantity).build();
-
         return cartItemRepository.save(cartItem);
+    }
+
+    private CartItem updateQuantity(CartItem item, int quantity) {
+        item.setQuantity(item.getQuantity() + quantity);
+        return cartItemRepository.save(item);
+    }
+
+    private Product getProductById(Long productId) {
+        return productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    private Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+    }
+
+    private static void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
     }
 }
