@@ -7,6 +7,7 @@ import com.kit.ecommerce_platform.model.User;
 import com.kit.ecommerce_platform.model.repository.CartItemRepository;
 import com.kit.ecommerce_platform.model.repository.CartRepository;
 import com.kit.ecommerce_platform.model.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,11 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
@@ -40,6 +39,7 @@ class CartServiceTest {
 
     private User user;
     private Product product;
+    private Product product2;
     private Cart cart;
 
     @BeforeEach
@@ -55,6 +55,13 @@ class CartServiceTest {
                 .description("High-end laptop")
                 .price(BigDecimal.valueOf(999.99))
                 .sku("LP-001")
+                .isActive(true).build();
+        product2 = Product.builder()
+                .id(1L)
+                .name("PC")
+                .description("High-end PC")
+                .price(BigDecimal.valueOf(1099.99))
+                .sku("PP-002")
                 .isActive(true).build();
         cart = Cart.builder().user(user).build();
     }
@@ -106,5 +113,49 @@ class CartServiceTest {
         // then
         assertThat(3).isEqualTo(updatedItem.getQuantity());
         verify(cartItemRepository).save(existingItem);
+    }
+
+    @Test
+    void whenRemoveExistingProductFromCart_shouldDeleteCartItem() {
+        // given
+        CartItem existingItem = CartItem.builder()
+                .cart(cart)
+                .product(product)
+                .quantity(2)
+                .build();
+        cart.getItems().add(existingItem);
+
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()))
+                .thenReturn(Optional.of(existingItem));
+
+        // when
+        cartService.removeProductFromCart(user.getId(), product.getId());
+
+        // then
+        assertThat(cart.getItems()).isEmpty();
+    }
+
+    @Test
+    void whenRemovedNonExistentProduct_shouldDoNothing() {
+        // given
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findByCartIdAndProductId(any(), any()))
+                .thenReturn(Optional.empty());
+
+        // when/then
+        assertThatNoException().isThrownBy(() -> cartService.removeProductFromCart(user.getId(), 999L));
+        verify(cartItemRepository, never()).delete(any());
+    }
+
+    @Test
+    void whenRemoveFromNonExistentCart_shouldThrowException() {
+        // given
+        when(cartRepository.findByUserId(any())).thenReturn(Optional.empty());
+
+        // when/then
+        assertThatThrownBy(() -> cartService.removeProductFromCart(999L, product.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Cart not found");
     }
 }

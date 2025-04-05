@@ -31,6 +31,17 @@ public class CartService {
                 .orElseGet(() -> createNewCartItem(cart, product, quantity));
     }
 
+    @Transactional
+    public void removeProductFromCart(Long userId, Long productId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+        cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
+                .ifPresent(item -> {
+                    cart.getItems().remove(item);
+                });
+    }
+
     private static void validateQuantity(int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
