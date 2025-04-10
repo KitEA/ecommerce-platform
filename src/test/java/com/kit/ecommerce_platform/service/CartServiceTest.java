@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -157,5 +158,44 @@ class CartServiceTest {
         assertThatThrownBy(() -> cartService.removeProductFromCart(999L, product.getId()))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Cart not found");
+    }
+
+    @Test
+    void whenRemoveItemFromTheCart_shouldRemoveSpecifiedItemFromTheCart() {
+        // given
+        CartItem cartItem = CartItem.builder()
+                .cart(cart)
+                .product(product)
+                .quantity(1).build();
+        CartItem cartItem2 = CartItem.builder()
+                .cart(cart)
+                .product(product2)
+                .quantity(2).build();
+
+        cart.getItems().addAll(List.of(cartItem, cartItem2));
+
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId()))
+                .thenReturn(Optional.of(cartItem));
+
+        // when
+        cartService.removeProductFromCart(user.getId(), product.getId());
+
+        // then
+        assertThat(cart.getItems())
+                .hasSize(1)
+                .containsExactly(cartItem2);
+    }
+
+    @Test
+    void whenRemoveItem_shouldAutoDeleteViaOrphanRemoval() {
+        CartItem item = CartItem.builder().cart(cart).product(product).build();
+        cart.getItems().add(item);
+        cartRepository.save(cart); // Persist with item
+
+        cart.getItems().remove(item); // Should trigger deletion
+        cartRepository.flush(); // Force DB sync
+
+        assertThat(cartItemRepository.findById(item.getId())).isEmpty(); // Verify deleted
     }
 }
