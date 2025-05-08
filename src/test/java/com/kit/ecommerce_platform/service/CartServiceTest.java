@@ -1,5 +1,6 @@
 package com.kit.ecommerce_platform.service;
 
+import com.kit.ecommerce_platform.dto.CartRequest;
 import com.kit.ecommerce_platform.model.Cart;
 import com.kit.ecommerce_platform.model.CartItem;
 import com.kit.ecommerce_platform.model.Product;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,12 +72,16 @@ class CartServiceTest {
     @Test
     void whenAddNewProductToCart_shouldCreateCartItem() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(product.getId())
+                .quantity(1).build();
         when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        CartItem cartItem = cartService.addProductToCart(user.getId(), product.getId(), 1);
+        CartItem cartItem = cartService.addProductToCart(cartRequest);
 
         // then
         assertThat(cartItem).isNotNull();
@@ -88,14 +94,25 @@ class CartServiceTest {
 
     @Test
     void whenAddProductWithZeroQuantity_shouldThrowException() {
+        // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(product.getId())
+                .quantity(0).build();
+
+        // when/then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> cartService.addProductToCart(user.getId(), product.getId(), 0))
+                .isThrownBy(() -> cartService.addProductToCart(cartRequest))
                 .withMessageContaining("Quantity must be positive");
     }
 
     @Test
     void whenAddExistingProductToCart_shouldUpdateQuantity() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(product.getId())
+                .quantity(2).build();
         CartItem existingItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
@@ -109,7 +126,7 @@ class CartServiceTest {
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        CartItem updatedItem = cartService.addProductToCart(user.getId(), product.getId(), 2);
+        CartItem updatedItem = cartService.addProductToCart(cartRequest);
 
         // then
         assertThat(3).isEqualTo(updatedItem.getQuantity());
@@ -119,6 +136,9 @@ class CartServiceTest {
     @Test
     void whenRemoveExistingProductFromCart_shouldDeleteCartItem() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(product.getId()).build();
         CartItem existingItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
@@ -131,7 +151,7 @@ class CartServiceTest {
                 .thenReturn(Optional.of(existingItem));
 
         // when
-        cartService.removeProductFromCart(user.getId(), product.getId());
+        cartService.removeProductFromCart(cartRequest);
 
         // then
         assertThat(cart.getItems()).isEmpty();
@@ -140,22 +160,28 @@ class CartServiceTest {
     @Test
     void whenRemovedNonExistentProduct_shouldDoNothing() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(999L).build();
         when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         when(cartItemRepository.findByCartIdAndProductId(any(), any()))
                 .thenReturn(Optional.empty());
 
         // when/then
-        assertThatNoException().isThrownBy(() -> cartService.removeProductFromCart(user.getId(), 999L));
+        assertThatNoException().isThrownBy(() -> cartService.removeProductFromCart(cartRequest));
         verify(cartItemRepository, never()).delete(any());
     }
 
     @Test
     void whenRemoveFromNonExistentCart_shouldThrowException() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(999L)
+                .productId(product.getId()).build();
         when(cartRepository.findByUserId(any())).thenReturn(Optional.empty());
 
         // when/then
-        assertThatThrownBy(() -> cartService.removeProductFromCart(999L, product.getId()))
+        assertThatThrownBy(() -> cartService.removeProductFromCart(cartRequest))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Cart not found");
     }
@@ -163,6 +189,9 @@ class CartServiceTest {
     @Test
     void whenRemoveItemFromTheCart_shouldRemoveSpecifiedItemFromTheCart() {
         // given
+        CartRequest cartRequest = CartRequest.builder()
+                .userId(user.getId())
+                .productId(product.getId()).build();
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
@@ -179,7 +208,7 @@ class CartServiceTest {
                 .thenReturn(Optional.of(cartItem));
 
         // when
-        cartService.removeProductFromCart(user.getId(), product.getId());
+        cartService.removeProductFromCart(cartRequest);
 
         // then
         assertThat(cart.getItems())
@@ -197,5 +226,56 @@ class CartServiceTest {
         cartRepository.flush(); // Force DB sync
 
         assertThat(cartItemRepository.findById(item.getId())).isEmpty(); // Verify deleted
+    }
+
+    @Test
+    void whenGetCart_shouldReturnCart_whenCartExists() {
+        // given
+        when(cartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+
+        // when
+        Cart result = cartService.getCart(cart.getId());
+
+        // then
+        assertThat(result).isEqualTo(cart);
+    }
+
+    @Test
+    void whenGetCart_shouldThrowException_whenCartNotFound() {
+        // given
+        when(cartRepository.findById(cart.getId())).thenReturn(Optional.empty());
+
+        // when/then
+        assertThatThrownBy(() -> cartService.getCart(cart.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Cart not found");
+    }
+
+    @Test
+    void whenCheckout_shouldClearCart_whenCartHasItems() {
+        // given
+        CartItem item = CartItem.builder().build();
+        cart.getItems().add(item);
+
+        when(cartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+
+        // when
+        cartService.checkout(cart.getId());
+
+        // then
+        assertThat(cart.getItems().isEmpty()).isTrue();
+        verify(cartRepository).save(cart);
+    }
+
+    @Test
+    void whenCheckout_shouldThrowException_whenCartIsEmpty() {
+        // given
+        Cart emptyCart = Cart.builder().id(1L).items(new ArrayList<>()).build();
+
+        when(cartRepository.findById(emptyCart.getId())).thenReturn(Optional.of(emptyCart));
+
+        assertThatThrownBy(() -> cartService.checkout(emptyCart.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Cannot checkout empty cart.");
     }
 }
