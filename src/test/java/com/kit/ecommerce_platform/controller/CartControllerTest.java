@@ -1,28 +1,28 @@
 package com.kit.ecommerce_platform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kit.ecommerce_platform.config.MockServiceConfig;
+import com.kit.ecommerce_platform.config.NoSecurityConfig;
 import com.kit.ecommerce_platform.dto.CartRequest;
 import com.kit.ecommerce_platform.model.Cart;
 import com.kit.ecommerce_platform.model.CartItem;
 import com.kit.ecommerce_platform.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CartController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@Import({MockServiceConfig.class, NoSecurityConfig.class})
 class CartControllerTest {
 
     @Autowired
@@ -96,14 +96,5 @@ class CartControllerTest {
         mockMvc.perform(post("/api/cart/{cartId}/checkout", cartId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Checkout complete. Payment processed."));
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        @Primary
-        CartService productSearchService() {
-            return mock(CartService.class);
-        }
     }
 }
