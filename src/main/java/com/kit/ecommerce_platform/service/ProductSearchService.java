@@ -16,16 +16,16 @@ public class ProductSearchService {
     private final ProductRepository productRepository;
 
     public List<Product> searchProducts(ProductSearchCriteria criteria) {
-        if (criteria.getName() != null) {
-            return productRepository.findByNameContainingIgnoreCase(criteria.getName());
+        if (criteria.name() != null) {
+            return productRepository.findByNameContainingIgnoreCase(criteria.name());
         }
 
-        if (criteria.getMinPrice() != null || criteria.getMaxPrice() != null) {
-            BigDecimal min = Optional.ofNullable(criteria.getMinPrice())
+        if (criteria.minPrice() != null || criteria.maxPrice() != null) {
+            BigDecimal min = Optional.ofNullable(criteria.minPrice())
                     .map(BigDecimal::valueOf)
                     .orElse(BigDecimal.ZERO);
 
-            BigDecimal max = Optional.ofNullable(criteria.getMaxPrice())
+            BigDecimal max = Optional.ofNullable(criteria.maxPrice())
                     .map(BigDecimal::valueOf)
                     .orElse(new BigDecimal("1000000"));
 

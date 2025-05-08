@@ -22,23 +22,23 @@ public class CartService {
 
     @Transactional
     public CartItem addProductToCart(CartRequest cartRequest) {
-        int quantity = cartRequest.getQuantity();
+        int quantity = cartRequest.quantity();
         validateQuantity(quantity);
 
-        Cart cart = getCartByUserId(cartRequest.getUserId());
-        Product product = getProductById(cartRequest.getProductId());
+        Cart cart = getCartByUserId(cartRequest.userId());
+        Product product = getProductById(cartRequest.productId());
 
-        return cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.getProductId())
+        return cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.productId())
                 .map(item -> updateQuantity(item, quantity))
                 .orElseGet(() -> createNewCartItem(cart, product, quantity));
     }
 
     @Transactional
     public void removeProductFromCart(CartRequest cartRequest) {
-        Cart cart = cartRepository.findByUserId(cartRequest.getUserId())
+        Cart cart = cartRepository.findByUserId(cartRequest.userId())
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
-        cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.getProductId())
+        cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.productId())
                 .ifPresent(item -> cart.getItems().remove(item));
     }
 
