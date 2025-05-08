@@ -39,9 +39,7 @@ public class CartService {
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
         cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.getProductId())
-                .ifPresent(item -> {
-                    cart.getItems().remove(item);
-                });
+                .ifPresent(item -> cart.getItems().remove(item));
     }
 
     public Cart getCart(Long cartId) {
