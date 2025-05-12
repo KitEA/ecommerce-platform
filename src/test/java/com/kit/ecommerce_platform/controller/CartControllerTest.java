@@ -29,12 +29,12 @@ class CartControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    CartService cartService;
+    private CartService cartService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void addToCart() throws Exception {
+    void whenAddToCart_shouldAddProductToTheCart() throws Exception {
         // given
         CartRequest cartRequest = CartRequest.builder()
                 .userId(1L)
@@ -56,7 +56,7 @@ class CartControllerTest {
     }
 
     @Test
-    void removeFromCart() throws Exception {
+    void whenRemoveFromCart_shouldRemoveProductFromTheCart() throws Exception {
         // given
         CartRequest cartRequest = CartRequest.builder()
                 .userId(1L)
@@ -73,7 +73,7 @@ class CartControllerTest {
     }
 
     @Test
-    void viewCart_shouldReturnCart() throws Exception {
+    void whenViewCart_shouldReturnCart() throws Exception {
         // given
         Cart cart = Cart.builder().id(1L).items(List.of()).build();
 
@@ -86,7 +86,7 @@ class CartControllerTest {
     }
 
     @Test
-    void checkout_shouldReturnSuccessMessage() throws Exception {
+    void whenCheckout_shouldReturnSuccessMessage() throws Exception {
         // given
         Long cartId = 1L;
 
