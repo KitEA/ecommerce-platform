@@ -1,0 +1,6 @@
+spring:
+  liquibase:
+    enabled: false
+
+jwt:
+  secret: test-secret-12345Ca6
