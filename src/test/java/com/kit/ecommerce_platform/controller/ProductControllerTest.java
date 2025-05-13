@@ -1,7 +1,7 @@
 package com.kit.ecommerce_platform.controller;
 
-import com.kit.ecommerce_platform.config.MockServiceConfig;
 import com.kit.ecommerce_platform.config.NoSecurityConfig;
+import com.kit.ecommerce_platform.config.ProductTestConfig;
 import com.kit.ecommerce_platform.model.Product;
 import com.kit.ecommerce_platform.service.ProductSearchService;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProductController.class)
-@Import({MockServiceConfig.class, NoSecurityConfig.class})
+@Import({ProductTestConfig.class, NoSecurityConfig.class})
 class ProductControllerTest {
 
     @Autowired
