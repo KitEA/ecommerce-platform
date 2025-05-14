@@ -1,5 +1,6 @@
 package com.kit.ecommerce_platform.controller;
 
+import com.kit.ecommerce_platform.config.ControllerTestConfig;
 import com.kit.ecommerce_platform.config.NoSecurityConfig;
 import com.kit.ecommerce_platform.config.ProductTestConfig;
 import com.kit.ecommerce_platform.model.Product;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProductController.class)
-@Import({ProductTestConfig.class, NoSecurityConfig.class})
+@Import({ControllerTestConfig.class, ProductTestConfig.class, NoSecurityConfig.class})
 class ProductControllerTest {
 
     @Autowired

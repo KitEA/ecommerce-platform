@@ -2,6 +2,7 @@ package com.kit.ecommerce_platform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kit.ecommerce_platform.config.CartTestConfig;
+import com.kit.ecommerce_platform.config.ControllerTestConfig;
 import com.kit.ecommerce_platform.config.NoSecurityConfig;
 import com.kit.ecommerce_platform.dto.CartRequest;
 import com.kit.ecommerce_platform.model.Cart;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CartController.class)
-@Import({CartTestConfig.class, NoSecurityConfig.class})
+@Import({ControllerTestConfig.class, CartTestConfig.class, NoSecurityConfig.class})
 class CartControllerTest {
 
     @Autowired
