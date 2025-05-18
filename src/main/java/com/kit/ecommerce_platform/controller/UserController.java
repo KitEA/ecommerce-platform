@@ -1,6 +1,7 @@
 package com.kit.ecommerce_platform.controller;
 
 import com.kit.ecommerce_platform.dto.AuthRequest;
+import com.kit.ecommerce_platform.dto.LoginResponse;
 import com.kit.ecommerce_platform.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest request) {
-        boolean success = userService.authenticateUser(request);
-        return success ? "Login successful" : "Invalid credentials";
+    public LoginResponse login(@RequestBody AuthRequest request) {
+        String token = userService.login(request);
+        return new LoginResponse(token);
     }
 }
