@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-product-data
+      author: kit
+      changes:
+        - loadData:
+            tableName: product
+            file: db/data/product.csv
+            separator: ","
+            quotchar: '"'

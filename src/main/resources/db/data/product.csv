@@ -1,0 +1,4 @@
+name,description,price,sku,is_active
+"MacBook Pro","Apple laptop with M1 chip",1999.99,"MBP-13-M1",true
+"iPhone 15","Latest iPhone model",999.99,"IPH-15",true
+"AirPods Pro","Noise cancelling earbuds",249.99,"AP-PRO",true
