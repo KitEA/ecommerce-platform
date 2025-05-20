@@ -1,11 +1,11 @@
 databaseChangeLog:
 
   - changeSet:
-      id: create-users
+      id: create-user
       author: system
       changes:
         - createTable:
-            tableName: users
+            tableName: user
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: username, type: VARCHAR(50), constraints: { nullable: false, unique: true } }
@@ -14,11 +14,11 @@ databaseChangeLog:
               - column: { name: is_active, type: BOOLEAN, constraints: { nullable: false } }
 
   - changeSet:
-      id: create-products
+      id: create-product
       author: system
       changes:
         - createTable:
-            tableName: products
+            tableName: product
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: name, type: VARCHAR(100), constraints: { nullable: false } }
@@ -28,51 +28,51 @@ databaseChangeLog:
               - column: { name: is_active, type: BOOLEAN, constraints: { nullable: false } }
 
   - changeSet:
-      id: create-carts
+      id: create-cart
       author: system
       changes:
         - createTable:
-            tableName: carts
+            tableName: cart
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: user_id, type: BIGINT, constraints: { nullable: false, unique: true } }
         - addForeignKeyConstraint:
-            baseTableName: carts
+            baseTableName: cart
             baseColumnNames: user_id
-            referencedTableName: users
+            referencedTableName: user
             referencedColumnNames: id
-            constraintName: fk_carts_user
+            constraintName: fk_cart_user
 
   - changeSet:
-      id: create-cart-items
+      id: create-cart-item
       author: system
       changes:
         - createTable:
-            tableName: cart_items
+            tableName: cart_item
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: cart_id, type: BIGINT, constraints: { nullable: false } }
               - column: { name: product_id, type: BIGINT, constraints: { nullable: false } }
               - column: { name: quantity, type: INT, constraints: { nullable: false } }
         - addForeignKeyConstraint:
-            baseTableName: cart_items
+            baseTableName: cart_item
             baseColumnNames: cart_id
-            referencedTableName: carts
+            referencedTableName: cart
             referencedColumnNames: id
-            constraintName: fk_cartitems_cart
+            constraintName: fk_cartitem_cart
         - addForeignKeyConstraint:
-            baseTableName: cart_items
+            baseTableName: cart_item
             baseColumnNames: product_id
-            referencedTableName: products
+            referencedTableName: product
             referencedColumnNames: id
-            constraintName: fk_cartitems_product
+            constraintName: fk_cartitem_product
 
   - changeSet:
-      id: create-orders
+      id: create-order
       author: system
       changes:
         - createTable:
-            tableName: orders
+            tableName: order
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
@@ -80,18 +80,18 @@ databaseChangeLog:
               - column: { name: status, type: VARCHAR(50), constraints: { nullable: false } }
               - column: { name: created_at, type: TIMESTAMP, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
         - addForeignKeyConstraint:
-            baseTableName: orders
+            baseTableName: order
             baseColumnNames: user_id
-            referencedTableName: users
+            referencedTableName: user
             referencedColumnNames: id
-            constraintName: fk_orders_user
+            constraintName: fk_order_user
 
   - changeSet:
-      id: create-order-items
+      id: create-order-item
       author: system
       changes:
         - createTable:
-            tableName: order_items
+            tableName: order_item
             columns:
               - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
               - column: { name: order_id, type: BIGINT, constraints: { nullable: false } }
@@ -99,14 +99,14 @@ databaseChangeLog:
               - column: { name: quantity, type: INT, constraints: { nullable: false } }
               - column: { name: price_at_purchase, type: DECIMAL(10,2), constraints: { nullable: false } }
         - addForeignKeyConstraint:
-            baseTableName: order_items
+            baseTableName: order_item
             baseColumnNames: order_id
-            referencedTableName: orders
+            referencedTableName: order
             referencedColumnNames: id
-            constraintName: fk_orderitems_order
+            constraintName: fk_orderitem_order
         - addForeignKeyConstraint:
-            baseTableName: order_items
+            baseTableName: order_item
             baseColumnNames: product_id
-            referencedTableName: products
+            referencedTableName: product
             referencedColumnNames: id
-            constraintName: fk_orderitems_product
+            constraintName: fk_orderitem_product
