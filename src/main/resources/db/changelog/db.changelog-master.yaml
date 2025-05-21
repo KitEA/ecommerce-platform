@@ -1,3 +1,5 @@
 databaseChangeLog:
-  - include: { file: db/changelog/create-tables.yaml }
-  - include: { file: db/changelog/load-data.yaml }
+  - include:
+      file: db/changelog/create-tables.yaml
+  - include:
+      file: db/changelog/load-data.yaml

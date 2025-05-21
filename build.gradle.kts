@@ -47,3 +47,9 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 	jvmArgs = listOf("-javaagent:${classpath.find { it.name.contains("mockito-core") }?.absolutePath}")
 }
+
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
+	imageName.set("ecommerce-app")
+	environment.set(mapOf("BP_JVM_VERSION" to "21"))
+}
+

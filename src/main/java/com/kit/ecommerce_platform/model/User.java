@@ -10,13 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "app_user")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)

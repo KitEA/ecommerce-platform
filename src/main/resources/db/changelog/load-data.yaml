@@ -8,3 +8,19 @@ databaseChangeLog:
             file: db/data/product.csv
             separator: ","
             quotchar: '"'
+            columns:
+              - column:
+                  name: name
+                  type: STRING
+              - column:
+                  name: description
+                  type: STRING
+              - column:
+                  name: price
+                  type: NUMERIC
+              - column:
+                  name: sku
+                  type: STRING
+              - column:
+                  name: is_active
+                  type: BOOLEAN

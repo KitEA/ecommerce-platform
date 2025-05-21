@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "user_order")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Order {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

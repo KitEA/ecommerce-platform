@@ -2,40 +2,96 @@ databaseChangeLog:
 
   - changeSet:
       id: create-user
-      author: system
+      author: kit
       changes:
         - createTable:
-            tableName: user
+            tableName: app_user
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: username, type: VARCHAR(50), constraints: { nullable: false, unique: true } }
-              - column: { name: password, type: VARCHAR(255), constraints: { nullable: false } }
-              - column: { name: email, type: VARCHAR(255), constraints: { nullable: false, unique: true } }
-              - column: { name: is_active, type: BOOLEAN, constraints: { nullable: false } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
 
   - changeSet:
       id: create-product
-      author: system
+      author: kit
       changes:
         - createTable:
             tableName: product
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: name, type: VARCHAR(100), constraints: { nullable: false } }
-              - column: { name: description, type: TEXT }
-              - column: { name: price, type: DECIMAL(10,2), constraints: { nullable: false } }
-              - column: { name: sku, type: VARCHAR(50), constraints: { nullable: false, unique: true } }
-              - column: { name: is_active, type: BOOLEAN, constraints: { nullable: false } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sku
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
 
   - changeSet:
       id: create-cart
-      author: system
+      author: kit
       changes:
         - createTable:
             tableName: cart
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: user_id, type: BIGINT, constraints: { nullable: false, unique: true } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: cart
             baseColumnNames: user_id
@@ -45,15 +101,32 @@ databaseChangeLog:
 
   - changeSet:
       id: create-cart-item
-      author: system
+      author: kit
       changes:
         - createTable:
             tableName: cart_item
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: cart_id, type: BIGINT, constraints: { nullable: false } }
-              - column: { name: product_id, type: BIGINT, constraints: { nullable: false } }
-              - column: { name: quantity, type: INT, constraints: { nullable: false } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cart_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: cart_item
             baseColumnNames: cart_id
@@ -69,16 +142,38 @@ databaseChangeLog:
 
   - changeSet:
       id: create-order
-      author: system
+      author: kit
       changes:
         - createTable:
-            tableName: order
+            tableName: user_order
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
-              - column: { name: total_price, type: DECIMAL(10,2), constraints: { nullable: false } }
-              - column: { name: status, type: VARCHAR(50), constraints: { nullable: false } }
-              - column: { name: created_at, type: TIMESTAMP, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: order
             baseColumnNames: user_id
@@ -88,16 +183,37 @@ databaseChangeLog:
 
   - changeSet:
       id: create-order-item
-      author: system
+      author: kit
       changes:
         - createTable:
             tableName: order_item
             columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
-              - column: { name: order_id, type: BIGINT, constraints: { nullable: false } }
-              - column: { name: product_id, type: BIGINT, constraints: { nullable: false } }
-              - column: { name: quantity, type: INT, constraints: { nullable: false } }
-              - column: { name: price_at_purchase, type: DECIMAL(10,2), constraints: { nullable: false } }
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_at_purchase
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: order_item
             baseColumnNames: order_id
