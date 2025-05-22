@@ -95,7 +95,7 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             baseTableName: cart
             baseColumnNames: user_id
-            referencedTableName: user
+            referencedTableName: app_user
             referencedColumnNames: id
             constraintName: fk_cart_user
 
@@ -175,9 +175,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:
-            baseTableName: order
+            baseTableName: user_order
             baseColumnNames: user_id
-            referencedTableName: user
+            referencedTableName: app_user
             referencedColumnNames: id
             constraintName: fk_order_user
 
@@ -217,7 +217,7 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             baseTableName: order_item
             baseColumnNames: order_id
-            referencedTableName: order
+            referencedTableName: user_order
             referencedColumnNames: id
             constraintName: fk_orderitem_order
         - addForeignKeyConstraint:

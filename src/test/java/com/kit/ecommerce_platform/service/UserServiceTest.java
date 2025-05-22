@@ -36,7 +36,7 @@ public class UserServiceTest {
     @Test
     void shouldRegisterNewUserSuccessfully() {
         // given
-        AuthRequest request = new AuthRequest("newuser", "password");
+        AuthRequest request = new AuthRequest("newuser", "password", "test@gmail.com");
 
         when(userRepository.findByUsername(request.username())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("encoded");
@@ -57,7 +57,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowExceptionIfUsernameAlreadyExists() {
         // given
-        AuthRequest request = new AuthRequest("existing", "pass");
+        AuthRequest request = new AuthRequest("existing", "pass", "test@gmail.com");
 
         when(userRepository.findByUsername("existing"))
                 .thenReturn(Optional.of(new User()));
@@ -70,7 +70,7 @@ public class UserServiceTest {
 
     @Test
     void shouldAuthenticateWithCorrectCredentials() {
-        AuthRequest request = new AuthRequest("user", "secret");
+        AuthRequest request = new AuthRequest("user", "secret", "test@gmail.com");
 
         User user = User.builder()
                 .username("user")
@@ -85,7 +85,7 @@ public class UserServiceTest {
 
     @Test
     void shouldRejectInvalidLogin() {
-        AuthRequest request = new AuthRequest("user", "wrong");
+        AuthRequest request = new AuthRequest("user", "wrong", "test@gmail.com");
 
         when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
 
@@ -98,10 +98,11 @@ public class UserServiceTest {
         // given
         String username = "john";
         String rawPassword = "secret";
+        String randomEmail = "test@gmail.com";
         String hashedPassword = "hashedSecret";
         String token = "mock-token";
 
-        AuthRequest request = new AuthRequest(username, rawPassword);
+        AuthRequest request = new AuthRequest(username, rawPassword, randomEmail);
         User user = User.builder()
                 .username(username)
                 .password(hashedPassword)
@@ -121,7 +122,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowBadCredentialsException_whenCredentialsAreInvalid() {
         // given
-        AuthRequest request = new AuthRequest("john", "wrong-password");
+        AuthRequest request = new AuthRequest("john", "wrong-password", "test@gmail.com");
 
         when(userRepository.findByUsername("john")).thenReturn(Optional.empty());
 

@@ -34,7 +34,7 @@ public class UserControllerTest {
     @Test
     void whenSignup_shouldReturnSuccessMessage() throws Exception {
         // given
-        AuthRequest request = new AuthRequest("newuser", "password");
+        AuthRequest request = new AuthRequest("newuser", "password", "test@gmail.com");
 
         doNothing().when(userService).registerUser(any());
 
@@ -49,7 +49,7 @@ public class UserControllerTest {
     @Test
     void whenLogin_shouldReturnToken() throws Exception {
         // given
-        AuthRequest request = new AuthRequest("john", "secret");
+        AuthRequest request = new AuthRequest("john", "secret", "test@gmail.com");
         String mockToken = "jwt-mock-token";
 
         when(userService.login(any())).thenReturn(mockToken);
