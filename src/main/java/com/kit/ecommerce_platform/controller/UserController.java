@@ -1,6 +1,7 @@
 package com.kit.ecommerce_platform.controller;
 
-import com.kit.ecommerce_platform.dto.AuthRequest;
+import com.kit.ecommerce_platform.dto.LoginRequest;
+import com.kit.ecommerce_platform.dto.SignUpRequest;
 import com.kit.ecommerce_platform.dto.LoginResponse;
 import com.kit.ecommerce_platform.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public String signup(@RequestBody AuthRequest request) {
+    public String signup(@RequestBody SignUpRequest request) {
         userService.registerUser(request);
         return "User registered successfully";
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody AuthRequest request) {
+    public LoginResponse login(@RequestBody LoginRequest request) {
         String token = userService.login(request);
         return new LoginResponse(token);
     }

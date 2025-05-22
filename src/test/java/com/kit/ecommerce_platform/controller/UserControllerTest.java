@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kit.ecommerce_platform.config.ControllerTestConfig;
 import com.kit.ecommerce_platform.config.NoSecurityConfig;
 import com.kit.ecommerce_platform.config.UserTestConfig;
-import com.kit.ecommerce_platform.dto.AuthRequest;
+import com.kit.ecommerce_platform.dto.LoginRequest;
+import com.kit.ecommerce_platform.dto.SignUpRequest;
 import com.kit.ecommerce_platform.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class UserControllerTest {
     @Test
     void whenSignup_shouldReturnSuccessMessage() throws Exception {
         // given
-        AuthRequest request = new AuthRequest("newuser", "password", "test@gmail.com");
+        SignUpRequest request = new SignUpRequest("newuser", "password", "test@gmail.com");
 
         doNothing().when(userService).registerUser(any());
 
@@ -49,7 +50,7 @@ public class UserControllerTest {
     @Test
     void whenLogin_shouldReturnToken() throws Exception {
         // given
-        AuthRequest request = new AuthRequest("john", "secret", "test@gmail.com");
+        LoginRequest request = new LoginRequest("john", "secret");
         String mockToken = "jwt-mock-token";
 
         when(userService.login(any())).thenReturn(mockToken);

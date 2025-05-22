@@ -1,6 +1,7 @@
 package com.kit.ecommerce_platform.service;
 
-import com.kit.ecommerce_platform.dto.AuthRequest;
+import com.kit.ecommerce_platform.dto.LoginRequest;
+import com.kit.ecommerce_platform.dto.SignUpRequest;
 import com.kit.ecommerce_platform.model.User;
 import com.kit.ecommerce_platform.model.repository.UserRepository;
 import com.kit.ecommerce_platform.security.JwtService;
@@ -36,7 +37,7 @@ public class UserServiceTest {
     @Test
     void shouldRegisterNewUserSuccessfully() {
         // given
-        AuthRequest request = new AuthRequest("newuser", "password", "test@gmail.com");
+        SignUpRequest request = new SignUpRequest("newuser", "password", "test@gmail.com");
 
         when(userRepository.findByUsername(request.username())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("encoded");
@@ -57,7 +58,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowExceptionIfUsernameAlreadyExists() {
         // given
-        AuthRequest request = new AuthRequest("existing", "pass", "test@gmail.com");
+        SignUpRequest request = new SignUpRequest("existing", "pass", "test@gmail.com");
 
         when(userRepository.findByUsername("existing"))
                 .thenReturn(Optional.of(new User()));
@@ -70,7 +71,7 @@ public class UserServiceTest {
 
     @Test
     void shouldAuthenticateWithCorrectCredentials() {
-        AuthRequest request = new AuthRequest("user", "secret", "test@gmail.com");
+        LoginRequest request = new LoginRequest("user", "secret");
 
         User user = User.builder()
                 .username("user")
@@ -85,7 +86,7 @@ public class UserServiceTest {
 
     @Test
     void shouldRejectInvalidLogin() {
-        AuthRequest request = new AuthRequest("user", "wrong", "test@gmail.com");
+        LoginRequest request = new LoginRequest("user", "wrong");
 
         when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
 
@@ -98,11 +99,10 @@ public class UserServiceTest {
         // given
         String username = "john";
         String rawPassword = "secret";
-        String randomEmail = "test@gmail.com";
         String hashedPassword = "hashedSecret";
         String token = "mock-token";
 
-        AuthRequest request = new AuthRequest(username, rawPassword, randomEmail);
+        LoginRequest request = new LoginRequest(username, rawPassword);
         User user = User.builder()
                 .username(username)
                 .password(hashedPassword)
@@ -122,7 +122,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowBadCredentialsException_whenCredentialsAreInvalid() {
         // given
-        AuthRequest request = new AuthRequest("john", "wrong-password", "test@gmail.com");
+        LoginRequest request = new LoginRequest("john", "wrong-password");
 
         when(userRepository.findByUsername("john")).thenReturn(Optional.empty());
 
