@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -39,7 +41,10 @@ public class CartService {
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
         cartItemRepository.findByCartIdAndProductId(cart.getId(), cartRequest.productId())
-                .ifPresent(item -> cart.getItems().remove(item));
+                .ifPresent(item -> {
+                    cart.getItems().remove(item);  // Remove from collection
+                    cartItemRepository.delete(item);  // Actually delete from database
+                });
     }
 
     public Cart getCart(Long cartId) {
@@ -49,7 +54,9 @@ public class CartService {
     @Transactional
     public void checkout(Long cartId) {
         Cart cart = getCart(cartId);
-        if (cart.getItems().isEmpty()) {
+
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
+        if (cartItems.isEmpty()) {
             throw new IllegalStateException("Cannot checkout empty cart.");
         }
 
@@ -57,6 +64,7 @@ public class CartService {
 
         cart.getItems().clear();
         cartRepository.save(cart);
+        cartItemRepository.deleteByCartId(cartId);
     }
 
     private static void validateQuantity(int quantity) {

@@ -254,17 +254,22 @@ class CartServiceTest {
     @Test
     void whenCheckout_shouldClearCart_whenCartHasItems() {
         // given
-        CartItem item = CartItem.builder().build();
-        cart.getItems().add(item);
+        CartItem item = CartItem.builder()
+                .id(1L)
+                .cart(cart)
+                .product(product)
+                .quantity(1)
+                .build();
 
         when(cartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findByCartId(cart.getId())).thenReturn(List.of(item));
 
         // when
         cartService.checkout(cart.getId());
 
         // then
-        assertThat(cart.getItems().isEmpty()).isTrue();
-        verify(cartRepository).save(cart);
+        verify(cartItemRepository).findByCartId(cart.getId());
+        verify(cartItemRepository).deleteByCartId(cart.getId());
     }
 
     @Test
