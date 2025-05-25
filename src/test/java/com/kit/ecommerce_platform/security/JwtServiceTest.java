@@ -11,8 +11,7 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        String SECRET_KEY = "testsecret123456789012345678901234567890";
-        jwtService = new JwtService(SECRET_KEY);
+        jwtService = new JwtService();
     }
 
     @Test
