@@ -140,7 +140,7 @@ class EcommerceWorkflowIntegrationTest {
         // Verify removal - this should work after fixing the service
         cartItems = cartItemRepository.findByCartId(cart.getId());
         assertThat(cartItems).hasSize(1);
-        assertThat(cartItems.get(0).getProduct().getId()).isEqualTo(macbookId);
+        assertThat(cartItems.getFirst().getProduct().getId()).isEqualTo(macbookId);
     }
 
     private void verifyWorkflowIntegrity() throws Exception {
@@ -156,8 +156,8 @@ class EcommerceWorkflowIntegrationTest {
         // Verify using direct repository query
         var finalItems = cartItemRepository.findByCartId(finalCart.getId());
         assertThat(finalItems).hasSize(1);
-        assertThat(finalItems.get(0).getProduct().getName()).isEqualTo("MacBook Pro");
-        assertThat(finalItems.get(0).getQuantity()).isEqualTo(1);
+        assertThat(finalItems.getFirst().getProduct().getName()).isEqualTo("MacBook Pro");
+        assertThat(finalItems.getFirst().getQuantity()).isEqualTo(1);
     }
 
     @Test
