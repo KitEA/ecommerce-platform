@@ -46,6 +46,12 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 	jvmArgs = listOf("-javaagent:${classpath.find { it.name.contains("mockito-core") }?.absolutePath}")
+	testLogging {
+		events("passed", "skipped", "failed")
+	}
+	// Enable continuous testing
+	inputs.files(fileTree("src/main"))
+	inputs.files(fileTree("src/test"))
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
